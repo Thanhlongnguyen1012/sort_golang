@@ -10,7 +10,7 @@ import (
 
 // Tạo struct chứa giá trị và chỉ số của 1 phần từ trong heap
 type Item struct {
-	value int
+	value uint64
 	index int
 }
 
@@ -61,9 +61,9 @@ func mergeFile(inputFile []string, outputFile string) {
 	//Initialize value for minHeap
 	for i, scanner := range scanners {
 		if scanner.Scan() {
-			num, err := strconv.Atoi(scanner.Text())
+			num, err := strconv.ParseUint(scanner.Text(), 10, 64)
 			if err != nil {
-				panic(err)
+				fmt.Println("Error converting to uint64")
 			}
 			heap.Push(h, Item{value: num, index: i})
 		}
@@ -71,12 +71,12 @@ func mergeFile(inputFile []string, outputFile string) {
 	//Take the smallest element out of minHeap and add an element to minHeap
 	for h.Len() > 0 {
 		minItem := heap.Pop(h).(Item)
-		writer.WriteString(strconv.Itoa(minItem.value) + "\n")
+		writer.WriteString(strconv.FormatUint(minItem.value, 10) + "\n")
 		//1 element goes into the heap, 1 element goes out of the heap
 		if scanners[minItem.index].Scan() {
-			num, err := strconv.Atoi(scanners[minItem.index].Text())
+			num, err := strconv.ParseUint(scanners[minItem.index].Text(), 10, 64)
 			if err != nil {
-				panic(err)
+				fmt.Println("Error converting to uint64")
 			}
 			heap.Push(h, Item{value: num, index: minItem.index})
 		}
