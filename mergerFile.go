@@ -8,13 +8,13 @@ import (
 	"strconv"
 )
 
-// Tạo struct chứa giá trị và chỉ số của 1 phần từ trong heap
+// Create a struct containing the value and index of an element in the heap
 type Item struct {
 	value uint64
 	index int
 }
 
-// Tạo cấu trúc heap trong golang
+// Create min heap structure
 type minHeap []Item
 
 func (h minHeap) Len() int {
@@ -37,7 +37,7 @@ func (h *minHeap) Pop() interface{} {
 	return x
 }
 
-// Gộp file bằng cấu trúc minHeap
+// Merge files using minHeap structure
 func mergeFile(inputFile []string, outputFile string) {
 	files := make([]*os.File, len(inputFile))
 	scanners := make([]*bufio.Scanner, len(inputFile))
