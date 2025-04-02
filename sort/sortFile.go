@@ -1,4 +1,4 @@
-package main
+package sort
 
 import (
 	"bufio"
@@ -8,16 +8,12 @@ import (
 	"strconv"
 )
 
-// funtions: split files and organize
-func sortFile(inputFile string) {
-	const (
-		fileNumber = 20
-		number     = 200_000_000
-	)
+// split, sort input file wrirte file
+func SortFile(inputFile string, fileNumber int, numberSplit int) {
 	// Create slice
 	var slice []uint64
-	var files [fileNumber]*os.File
-	var writers [fileNumber]*bufio.Writer
+	var files []*os.File
+	var writers []*bufio.Writer
 	//Open input file
 	file, err := os.Open(inputFile)
 	if err != nil {
@@ -30,11 +26,10 @@ func sortFile(inputFile string) {
 		if err != nil {
 			fmt.Printf("Create file %d err"+"\n", i)
 		}
-		files[i] = f
-		//bufer = 16 MB
-		writers[i] = bufio.NewWriterSize(f, 16*1024*1024)
+		files = append(files, f)
+		writers = append(writers, bufio.NewWriterSize(f, 16*1024*1024)) //bufer = 16 MB
 	}
-	//Read input file, write slice = 250_000_000, write output file
+	//Read an input file, store the data in a slice, then write it to an output file
 	scanner := bufio.NewScanner(file)
 	index := 0
 	for scanner.Scan() {
@@ -42,10 +37,9 @@ func sortFile(inputFile string) {
 		if err != nil {
 			fmt.Println("Read file error")
 		}
-		//Read an input file, store the data in a slice, then write it to an output file
 		slice = append(slice, num)
-		// if len(slice) = 250_000_000 then sort, Reset len of slice
-		if len(slice) >= number {
+		// if len(slice) = number then sort, Reset len of slice
+		if len(slice) >= numberSplit {
 			slices.Sort(slice)
 			for line, num := range slice {
 				_, err = writers[index].WriteString(strconv.FormatUint(num, 10) + "\n")
@@ -54,12 +48,10 @@ func sortFile(inputFile string) {
 				}
 			}
 			index++
-			//len = 0
-			slice = slice[:0]
+			slice = slice[:0] //reset, len = 0
 		}
 	}
-	//close file
-	file.Close()
+	file.Close() //close file
 	for i := 0; i < fileNumber; i++ {
 		writers[i].Flush()
 		files[i].Close()

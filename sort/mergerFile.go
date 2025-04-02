@@ -1,4 +1,4 @@
-package main
+package sort
 
 import (
 	"bufio"
@@ -8,13 +8,14 @@ import (
 	"strconv"
 )
 
-// Create a struct containing the value and index of an element in the heap
+// Create a struct containing the value,
+// index of an element in the heap
 type Item struct {
 	value uint64
 	index int
 }
 
-// Create min heap structure
+// Create min heap type use package container/heap
 type minHeap []Item
 
 func (h minHeap) Len() int {
@@ -38,9 +39,11 @@ func (h *minHeap) Pop() interface{} {
 }
 
 // Merge files using minHeap structure
-func mergeFile(inputFile []string, outputFile string) {
-	files := make([]*os.File, len(inputFile))
+// Write output file
+func MergeFile(inputFile []string, outputFile string) {
+	files := make([]*os.File, len(inputFile)) // open input file
 	scanners := make([]*bufio.Scanner, len(inputFile))
+	//open input file
 	for i, fileName := range inputFile {
 		file, err := os.Open(fileName)
 		if err != nil {
@@ -50,15 +53,15 @@ func mergeFile(inputFile []string, outputFile string) {
 		files[i] = file
 		scanners[i] = bufio.NewScanner(file)
 	}
-	fileOut, err := os.Create(outputFile)
+	fileOut, err := os.Create(outputFile) // open output file
 	if err != nil {
 		println("Opening the output file failed")
 	}
 	defer fileOut.Close()
 	writer := bufio.NewWriter(fileOut)
+	//initialize value for minHeap
 	h := &minHeap{}
 	heap.Init(h)
-	//Initialize value for minHeap
 	for i, scanner := range scanners {
 		if scanner.Scan() {
 			num, err := strconv.ParseUint(scanner.Text(), 10, 64)
@@ -69,10 +72,10 @@ func mergeFile(inputFile []string, outputFile string) {
 		}
 	}
 	//Take the smallest element out of minHeap and add an element to minHeap
+	//1 element goes into the heap, 1 element goes out of the heap
 	for h.Len() > 0 {
 		minItem := heap.Pop(h).(Item)
 		writer.WriteString(strconv.FormatUint(minItem.value, 10) + "\n")
-		//1 element goes into the heap, 1 element goes out of the heap
 		if scanners[minItem.index].Scan() {
 			num, err := strconv.ParseUint(scanners[minItem.index].Text(), 10, 64)
 			if err != nil {

@@ -1,4 +1,4 @@
-package main
+package create
 
 import (
 	"bufio"
@@ -10,16 +10,14 @@ import (
 )
 
 // create input file
-func creaFile(s string) {
-	var count int = 4_000_000_000
-	var maxValue uint64 = 18_000_000_000
+func CreateFile(s string, numberTotal int, maxValue uint64) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	file, err := os.Create(s)
 	if err != nil {
 		fmt.Println("Error creating file")
 	}
 	writer := bufio.NewWriter(file)
-	for i := 0; i < count; i++ {
+	for i := 0; i < numberTotal; i++ {
 		num := r.Uint64() % (maxValue + 1)
 		_, err = writer.WriteString(strconv.FormatUint(num, 10) + "\n")
 		if err != nil {
